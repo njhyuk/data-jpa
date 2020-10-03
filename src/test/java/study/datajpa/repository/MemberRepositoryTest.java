@@ -11,6 +11,7 @@ import study.datajpa.entity.Team;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -129,5 +130,18 @@ class MemberRepositoryTest {
         List<Member> result = memberRepository.findByNames(names);
 
         assertThat(result.get(0).getUsername()).isEqualTo(names.get(0));
+    }
+
+    @Test
+    public void returnType() {
+        Member m1 = new Member("AAA", 10);
+        Member m2 = new Member("BBB", 20);
+
+        memberRepository.save(m1);
+        memberRepository.save(m2);
+
+        List<Member> memberList = memberRepository.findListByUsername("AAA");
+        Member member = memberRepository.findMemberByUsername("AAA");
+        Optional<Member> ootionalMember = memberRepository.findOptionalMemberByUsername("AAA");
     }
 }
