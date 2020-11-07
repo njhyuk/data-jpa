@@ -199,4 +199,32 @@ class MemberRepositoryTest {
 
         assertThat(resultCount).isEqualTo(3);
     }
+
+    @Test
+    public void findMemberLazy() {
+        Team teamA = new Team("teamA");
+        Team teamB = new Team("teamA");
+        teamRepository.save(teamA);
+        teamRepository.save(teamB);
+
+        Member member1 = new Member("member1", 10, teamA);
+        Member member2 = new Member("member1", 10, teamA);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+
+        em.flush();
+        em.clear();
+
+//        List<Member> members = memberRepository.findAll();
+//        List<Member> members = memberRepository.findMemberFetchJoin(); // 한번에 연관 데이터를 가져온다
+        List<Member> members = memberRepository.findEntityGraphByUsername("member1");
+
+        // flush, clear 를 했기 때문에 lazy 로딩 으로 N+1 쿼리를 하게 된다.
+        // 이러한 경우 보통 fetch join으로 해결 한다, JPQL을 직접 써야 하는 단점, Entity Graph로 해결 가능
+        for (Member member : members) {
+            System.out.println("member = " + member.getUsername());
+            System.out.println("member.teamClass = " + member.getTeam().getClass()); // fetch join을 하는 경우 Proxy 가 아닌 entity.Team 객체가 나온다
+            System.out.println("member.team = " + member.getTeam().getName());
+        }
+    }
 }
