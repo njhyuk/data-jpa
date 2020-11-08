@@ -254,4 +254,15 @@ class MemberRepositoryTest {
 
         List<Member> result = memberRepository.findLockByUsername("member1");
     }
+
+    @Test
+    public void callCustom() {
+        // 간단한 기능은 JPQL로만 하고
+        // 복잡한 쿼리는 QueryDSL을 사용할때 Custom을 많이 쓴다
+        // 구현체에 suffix로 Impl은 필수
+
+        // 항상 Custom을 만드는 실수에 주의
+        // ex) 화면에 연관된 쿼리처럼 자주 바뀌는것, MemberQueryRepository 클래스를 별도로 만들어도 됨
+        List<Member> result = memberRepository.findMemberCustom();
+    }
 }
