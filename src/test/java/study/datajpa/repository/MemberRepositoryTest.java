@@ -227,4 +227,31 @@ class MemberRepositoryTest {
             System.out.println("member.team = " + member.getTeam().getName());
         }
     }
+
+    @Test
+    public void queryHint() {
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        // readonly 힌트로 인해 변경감지 update 쿼리를 만들지 않음, 최적화
+        // 장애의 90%는 잘못된 쿼리로 장애, readonly가 필요한 경우는 많지 않다
+        // 레디스와 같은 캐시를 먼저 검토
+        // 꼭 필요한지 성능 테스트 검토
+        Member findMember = memberRepository.findReadOnlyByUsername("member1");
+        findMember.setUsername("member2");
+
+        em.flush();
+    }
+
+    @Test
+    public void lock() {
+        Member member1 = new Member("member1", 10);
+        memberRepository.save(member1);
+        em.flush();
+        em.clear();
+
+        List<Member> result = memberRepository.findLockByUsername("member1");
+    }
 }
